@@ -98,8 +98,13 @@ app.get('/app', (req, res) => {
 
 app.get('/app/log/access', (req, res) => {
   try {
-    const stmt = db.prepare('SELECT * FROM accessLog').all()
-    res.status(200).json(stmt)
+    if (args.debug){
+        const stmt = db.prepare('SELECT * FROM accessLog').all()
+        res.status(200).json(stmt)
+    } else {
+        res.status(404).json("404 NOT FOUND")
+    }
+    
 } catch (e){
     console.error(e)
 }
