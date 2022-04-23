@@ -38,7 +38,7 @@ if (args.port < 1 || args.port > 65535){
   port = 5000
 }
 const server = app.listen(port, () => {
-    console.log(`Server is cumming and running on ${port}`)
+    console.log(`Server is and running on ${port}`)
     //Same asconsole.log('App is running on port %PORT%'.replace('$PORT$', port))
 })
 
