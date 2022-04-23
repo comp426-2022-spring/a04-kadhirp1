@@ -2,6 +2,8 @@ const express = require('express')
 const app = express()
 const args = require("minimist")(process.argv.slice(2))
 const db = require("./database.js")
+const fs = require('fs')
+const morgan = require('morgan')
 //Command Line Argument for port here
 args["port"]
 args["help"]
@@ -32,11 +34,23 @@ if (args.help || args.h) {
 }
 
 const port = args.port || process.env.PORT || 5000
-
+if (args.port < 1 || args.port > 65535){
+  port = 5000
+}
 const server = app.listen(port, () => {
     console.log(`Server is cumming and running on ${port}`)
     //Same asconsole.log('App is running on port %PORT%'.replace('$PORT$', port))
 })
+
+
+
+if (args.log){
+  
+} else{
+  accessLog = fs.createWriteStream('access.log', { flags: 'a'})
+  app.use(morgan('combined', {stream: accessLog}))
+}
+
 
 app.use((req, res, next) => {
   const stmt = db.prepare('INSERT INTO accesslog (remoteaddr, remoteuser, time, method, url, protocol, httpversion, status, referer, useragent) VALUES (?,?,?,?,?,?,?,?,?,?)')
@@ -108,6 +122,14 @@ app.get('/app/log/access', (req, res) => {
 } catch (e){
     console.error(e)
 }
+})
+
+app.get('/app/error', (req, res) => {
+  if (args.debug){
+    throw new Error('Error test successful.')
+  } else {
+    res.status(404).json("404 NOT FOUND")
+  }
 })
 
 app.get('/app/flip', (req, res) => {
